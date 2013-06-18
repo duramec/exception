@@ -23,7 +23,7 @@ class EdnExceptionSuite extends FunSuite {
 
   test ("parses exception") {
     val e = getException()
-    val edn = EdnException.format(e)
+    val edn = EdnException.parse(e)
     val obj = Convert.ednToObjects(edn).get(0).asInstanceOf[java.util.Map[Object, Object]]
     val s = obj.get(Keyword.newKeyword("message")).asInstanceOf[String]
     expectResult (true) { s.startsWith(filename) }
@@ -38,7 +38,7 @@ class EdnExceptionSuite extends FunSuite {
   test ("parses exception with inherited field members") {
     val e = getException()
     val wrapped = new ATestException("something", 123, e)
-    val edn = EdnException.format(wrapped)
+    val edn = EdnException.parse(wrapped)
     val obj = Convert.ednToObjects(edn).get(0).asInstanceOf[java.util.Map[Object, Object]]
     val state = obj.get(Keyword.newKeyword("state")).asInstanceOf[java.util.Map[Object, Object]]
     expectResult ("something") { state.get(Symbol.newSymbol("value1")).asInstanceOf[java.lang.String] }

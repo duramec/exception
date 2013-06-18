@@ -14,17 +14,16 @@ import java.util.regex.Pattern;
 import io.zig.data.Convert;
 
 public class EdnException {
+	// todo: add special cases for +, -, and .
 	static final Pattern exclusionPattern = Pattern
 			.compile("[^a-zA-Z0-9\\._%$\\?=\\*&]+");
-
-	// todo: add special cases for +, -, and .
 
 	/*
 	 * Be extra paranoid here. If a weird case happens where we cannot
 	 * deserialize field members through reflection, we want to get as much
 	 * Exception information as possible.
 	 */
-	public static final String format(Exception e) {
+	public static final String parse(Exception e) {
 		Map<Object, Object> obj = createFull(e);
 		String edn = "";
 		try {
