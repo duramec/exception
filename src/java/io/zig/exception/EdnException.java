@@ -1,6 +1,7 @@
 package io.zig.exception;
 
-import us.bpsm.edn.Keyword;
+import static us.bpsm.edn.Keyword.newKeyword;
+import static us.bpsm.edn.Symbol.newSymbol;
 import us.bpsm.edn.Symbol;
 import java.util.Map;
 import java.util.List;
@@ -52,9 +53,9 @@ public class EdnException {
 
 	static final Map<Object, Object> createSimple(Exception e) {
 		Map<Object, Object> obj = new HashMap<Object, Object>();
-		Symbol name = symbol(e.getClass().getName());
-		obj.put(keyword("type"), name);
-		obj.put(keyword("message"), e.getMessage());
+		Symbol name = newSymbol(normalize(e.getClass().getName()));
+		obj.put(newKeyword("type"), name);
+		obj.put(newKeyword("message"), e.getMessage());
 		return obj;
 	}
 
@@ -70,16 +71,16 @@ public class EdnException {
 			placeStackTraceElement(stack, element);
 		}
 		if (stack.size() > 0) {
-			obj.put(keyword("trace"), stack);
+			obj.put(newKeyword("trace"), stack);
 		}
 	}
 
 	static final void placeStackTraceElement(List<Object> stack,
 			StackTraceElement element) {
 		ArrayList<Object> entry = new ArrayList<Object>();
-		entry.add(symbol(element.getClassName()));
-		entry.add(symbol(element.getMethodName()));
-		entry.add(symbol(element.getFileName()));
+		entry.add(newSymbol(normalize(element.getClassName())));
+		entry.add(newSymbol(normalize(element.getMethodName())));
+		entry.add(newSymbol(normalize(element.getFileName())));
 		entry.add(element.getLineNumber());
 		stack.add(entry);
 	}
@@ -95,7 +96,7 @@ public class EdnException {
 			state.clear();
 		}
 		if (state.size() > 0) {
-			object.put(keyword("state"), state);
+			object.put(newKeyword("state"), state);
 		}
 	}
 
@@ -108,19 +109,11 @@ public class EdnException {
 			break;
 		default:
 			field.setAccessible(true);
-			state.put(symbol(name), field.get(e));
+			state.put(newSymbol(normalize(name)), field.get(e));
 			break;
 		}
 	}
-
-	static final Keyword keyword(String s) {
-		return Keyword.newKeyword(s);
-	}
-
-	static final Symbol symbol(String s) {
-		return Symbol.newSymbol(normalize(s));
-	}
-
+	
 	static final String normalize(String s) {
 		return exclusionPattern.matcher(s).replaceAll("_");
 	}
